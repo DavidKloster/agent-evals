@@ -62,7 +62,7 @@ agent-evals/
 │   ├── PULL_REQUEST_TEMPLATE.md
 │   └── workflows/             ci, release, codeql, scorecard
 ├── docs/                      the implementation docs (index: docs/README.md)
-│   └── maintainers/           this design, the extraction runbook
+│   └── maintainers/           this design
 ├── examples/invoice-desk/     a complete pair of suites (regression, capability)
 ├── schema/                    task.schema.json, suite.schema.json (generated)
 ├── src/                       the package

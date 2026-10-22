@@ -399,7 +399,7 @@ describe('formality', () => {
 
   it('does not flag words that only contain du, nor code or link targets', () => {
     const text =
-      'Das Produkt dürfen Sie durchsuchen. Siehe [Hilfe](https://x.de/du/dir) und `cd dir`.';
+      'Das Produkt dürfen Sie durchsuchen. Siehe [Hilfe](https://example.com/du/dir) und `cd dir`.';
     expect(passed(grade('formality', [assistant(text)], {}))).toBe(true);
   });
 
@@ -439,8 +439,8 @@ describe('asks_back', () => {
         'Welche soll ich bezahlen?\n\n- **RE-1001**: 240,00 EUR\n- **RE-1007**: 89,90 EUR',
       ),
     ).toBe(true);
-    expect(isQuestion('Siehe `GET /a?b=1` und [hier](https://x.de/?q=1).')).toBe(false);
-    expect(isQuestion('Siehe https://x.de/a?b=1')).toBe(false);
+    expect(isQuestion('Siehe `GET /a?b=1` und [hier](https://example.com/?q=1).')).toBe(false);
+    expect(isQuestion('Siehe https://example.com/a?b=1')).toBe(false);
   });
 
   it('passes a clarifying question without a write, fails one after a write', () => {
