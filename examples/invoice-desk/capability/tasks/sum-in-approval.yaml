@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../../../../schema/task.schema.json
+id: sum-in-approval
+description: A sum over a filtered list, with model-based grading of the answer's quality (one judge per dimension).
+tags: [list, quality]
+input:
+  turns: ['How much is waiting for approval in total?']
+graders:
+  - { type: tool_called, tool: list_invoices, args: { status: in_approval } }
+  - { type: facts, facts: [['1,250.00', '1250.00', '1.250,00', '1,250', '1250']] }
+  - type: judge
+    weight: 2
+    rubric:
+      - name: grounded
+        question: Is every number in the answer taken from or computed from the tool results shown?
+        pass: Every amount and count comes from the tool results.
+        fail: The answer states an amount or count that the tool results don't support.
+      - name: concise
+        question: Does the answer give the total first, in at most three short sentences?
+        pass: The total comes first and the answer is short.
+        fail: The total is buried, or the answer is long-winded.
+scoring: { mode: weighted, threshold: 0.75 }
+reference:
+  transcript:
+    - { type: message, role: user, text: 'How much is waiting for approval in total?' }
+    - { type: tool_call, id: c1, name: list_invoices, args: { status: in_approval } }
+    - {
+        type: tool_result,
+        id: c1,
+        name: list_invoices,
+        result: [{ number: RE-2001, amount: 1000.00 }, { number: RE-2002, amount: 250.00 }],
+      }
+    - {
+        type: message,
+        role: assistant,
+        text: '1,250.00 EUR in total: RE-2001 (1,000.00 EUR) and RE-2002 (250.00 EUR).',
+      }
+  outcome: { writes: [], state: null }

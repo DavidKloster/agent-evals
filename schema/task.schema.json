@@ -1,0 +1,183 @@
+{
+  "$id": "task.schema.json",
+  "title": "Agent eval task",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "description": "Unique within the suite; also the trial files' name."
+    },
+    "description": {
+      "description": "What the task checks, in one or two sentences.",
+      "type": "string"
+    },
+    "source": {
+      "description": "Where the task comes from: the issue or the real failure.",
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "input": {
+      "type": "object",
+      "properties": {
+        "turns": {
+          "description": "What the user types, one message per turn.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "user": {
+          "description": "A simulated user (a second model) with a fixed persona and goal.",
+          "type": "object",
+          "properties": {
+            "persona": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "firstMessage": {
+              "type": "string"
+            },
+            "maxTurns": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "persona",
+            "goal"
+          ],
+          "additionalProperties": false
+        },
+        "context": {
+          "description": "Passed to the adapter as is.",
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        }
+      },
+      "additionalProperties": false
+    },
+    "graders": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The grader: a built-in one (README, \"Graders\") or one a project registers."
+          },
+          "id": {
+            "description": "Unique within the task, the suite's default graders counted; defaults to the type (type#2 for the second unnamed one).",
+            "type": "string",
+            "minLength": 1
+          },
+          "weight": {
+            "description": "The weight in a weighted or hybrid score (default 1).",
+            "type": "number",
+            "minimum": 0
+          },
+          "required": {
+            "description": "In hybrid scoring, this grader must pass whatever the weighted score.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": {},
+        "description": "One grader with its parameters; the parameters depend on the grader's type."
+      },
+      "description": "The task's own graders, after the suite's default graders. May be empty only when the suite has default graders: the loader refuses a task left without any grader, and grader ids that repeat."
+    },
+    "scoring": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "binary",
+            "weighted",
+            "hybrid"
+          ]
+        },
+        "threshold": {
+          "description": "For weighted and hybrid (default 1).",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "additionalProperties": false
+    },
+    "trials": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991
+    },
+    "timeoutMs": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991
+    },
+    "reference": {
+      "description": "A solution that passes every grader: `agent-evals validate` checks it.",
+      "type": "object",
+      "properties": {
+        "transcript": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "message",
+                  "model_call",
+                  "tool_call",
+                  "tool_result",
+                  "error",
+                  "note"
+                ]
+              },
+              "at": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "additionalProperties": {},
+            "description": "A transcript event (README, \"Transcripts\")."
+          }
+        },
+        "outcome": {}
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "id",
+    "input",
+    "graders"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=../../../../schema/task.schema.json
+id: no-tool-for-general-question
+description: A question the assistant answers from what it knows; looking anything up is wasted time (should NOT call).
+tags: [no-tool, balance]
+input:
+  turns: ['What does "net 30" mean on an invoice?']
+graders:
+  - { type: tool_calls, max: 0 }
+  - { type: facts, facts: ['re:30 days|thirty days'] }
+reference:
+  transcript:
+    - { type: message, role: user, text: 'What does "net 30" mean on an invoice?' }
+    - {
+        type: message,
+        role: assistant,
+        text: 'It means the full amount is due within 30 days of the invoice date.',
+      }

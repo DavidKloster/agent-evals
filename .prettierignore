@@ -1,0 +1,7 @@
+node_modules/
+dist/
+coverage/
+# Generated from the zod schema (npm run schema).
+schema/
+# A run's results (agent-evals run).
+examples/*/results/

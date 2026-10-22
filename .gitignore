@@ -1,0 +1,6 @@
+node_modules/
+dist/
+coverage/
+*.tgz
+# A run's results (agent-evals run): measurements, not sources.
+examples/*/results/

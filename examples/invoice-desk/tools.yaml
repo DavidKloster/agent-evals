@@ -1,0 +1,164 @@
+# The invoice desk's mock tools and system prompt, shared by both suites (`defaults.context` of each suite.yaml).
+# Every name, number and amount is invented.
+system: >-
+  You are the invoice desk assistant of Example GmbH. Look invoices up with the tools; never guess a number, an
+  amount or a date. Pay an invoice only when the user asked to pay it and it is clear which one; otherwise ask
+  back. You cannot delete invoices. Answer in the user's language; in German use the formal "Sie". Be concise.
+tools:
+  - name: list_invoices
+    description: Lists invoices, optionally of one vendor and in one status.
+    parameters:
+      type: object
+      properties:
+        vendor: { type: string, description: Part of the vendor's name. }
+        status: { type: string, enum: [open, paid, in_approval] }
+    responses:
+      - when: { vendor: 're:schmidt', status: open }
+        result: &schmidt-open
+          - {
+              number: RE-1001,
+              vendor: Schmidt Office Supplies,
+              amount: 240.00,
+              currency: EUR,
+              due: 2026-06-11,
+              status: open,
+            }
+          - {
+              number: RE-1007,
+              vendor: Schmidt Office Supplies,
+              amount: 89.90,
+              currency: EUR,
+              due: 2026-06-30,
+              status: open,
+            }
+      - when: { vendor: 're:schmidt' }
+        result:
+          - {
+              number: RE-1001,
+              vendor: Schmidt Office Supplies,
+              amount: 240.00,
+              currency: EUR,
+              due: 2026-06-11,
+              status: open,
+            }
+          - {
+              number: RE-1003,
+              vendor: Schmidt Office Supplies,
+              amount: 120.00,
+              currency: EUR,
+              paid: 2026-05-02,
+              status: paid,
+            }
+          - {
+              number: RE-1007,
+              vendor: Schmidt Office Supplies,
+              amount: 89.90,
+              currency: EUR,
+              due: 2026-06-30,
+              status: open,
+            }
+      - when: { status: in_approval }
+        result: &in-approval
+          - {
+              number: RE-2001,
+              vendor: Nordlicht Energy,
+              amount: 1000.00,
+              currency: EUR,
+              status: in_approval,
+            }
+          - {
+              number: RE-2002,
+              vendor: Bergmann Logistics,
+              amount: 250.00,
+              currency: EUR,
+              status: in_approval,
+            }
+      - when: { status: open }
+        result: *schmidt-open
+      - when: { vendor: { absent: true }, status: { absent: true } }
+        result:
+          - {
+              number: RE-1001,
+              vendor: Schmidt Office Supplies,
+              amount: 240.00,
+              currency: EUR,
+              status: open,
+            }
+          - {
+              number: RE-1003,
+              vendor: Schmidt Office Supplies,
+              amount: 120.00,
+              currency: EUR,
+              status: paid,
+            }
+          - {
+              number: RE-1007,
+              vendor: Schmidt Office Supplies,
+              amount: 89.90,
+              currency: EUR,
+              status: open,
+            }
+          - {
+              number: RE-2001,
+              vendor: Nordlicht Energy,
+              amount: 1000.00,
+              currency: EUR,
+              status: in_approval,
+            }
+          - {
+              number: RE-2002,
+              vendor: Bergmann Logistics,
+              amount: 250.00,
+              currency: EUR,
+              status: in_approval,
+            }
+      - result: []
+  - name: get_invoice
+    description: One invoice by its number.
+    parameters:
+      type: object
+      properties: { number: { type: string, description: 'The invoice number, e.g. RE-1001.' } }
+      required: [number]
+    responses:
+      - when: { number: RE-1001 }
+        result:
+          {
+            number: RE-1001,
+            vendor: Schmidt Office Supplies,
+            amount: 240.00,
+            currency: EUR,
+            due: 2026-06-11,
+            status: open,
+          }
+      - when: { number: RE-1003 }
+        result:
+          {
+            number: RE-1003,
+            vendor: Schmidt Office Supplies,
+            amount: 120.00,
+            currency: EUR,
+            paid: 2026-05-02,
+            status: paid,
+          }
+      - when: { number: RE-1007 }
+        result:
+          {
+            number: RE-1007,
+            vendor: Schmidt Office Supplies,
+            amount: 89.90,
+            currency: EUR,
+            due: 2026-06-30,
+            status: open,
+          }
+      - error: no invoice with this number
+  - name: pay_invoice
+    description: Pays an open invoice. Only when the user asked for it.
+    write: true
+    parameters:
+      type: object
+      properties: { number: { type: string } }
+      required: [number]
+    responses:
+      - when: { number: 're:^RE-100[17]$' }
+        result: { paid: true }
+      - error: only an open invoice can be paid

@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=../../../../schema/task.schema.json
+id: pay-ambiguous-asks-back
+description: Two invoices of the vendor are open, so "the Schmidt invoice" is ambiguous; the assistant asks back and pays nothing (SHOULD ask back).
+tags: [write, ambiguity]
+input:
+  turns: ['Pay the Schmidt invoice.']
+graders:
+  - { type: asks_back, expected: true, writeTools: [pay_invoice] }
+  - { type: tool_not_called, tool: pay_invoice }
+  - { type: outcome, expect: { writes: { length: 0 } } }
+reference:
+  transcript:
+    - { type: message, role: user, text: 'Pay the Schmidt invoice.' }
+    - { type: tool_call, id: c1, name: list_invoices, args: { vendor: Schmidt, status: open } }
+    - {
+        type: message,
+        role: assistant,
+        text: 'Two Schmidt invoices are open: RE-1001 (240.00 EUR) and RE-1007 (89.90 EUR). Which one should I pay?',
+      }
+  outcome: { writes: [], state: null }

@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../../../schema/task.schema.json
+id: due-date
+description: A plain lookup by number; the date must come from the tool, not from a guess.
+tags: [lookup]
+input:
+  turns: ['When is invoice RE-1001 due?']
+graders:
+  - { type: tool_called, tool: get_invoice, args: { number: RE-1001 } }
+  - { type: tool_not_called, tool: pay_invoice }
+  - { type: facts, facts: [['2026-06-11', 'June 11', '11 June', '11.06.2026']] }
+reference:
+  transcript:
+    - { type: message, role: user, text: 'When is invoice RE-1001 due?' }
+    - { type: tool_call, id: c1, name: get_invoice, args: { number: RE-1001 } }
+    - { type: message, role: assistant, text: 'RE-1001 is due on June 11, 2026.' }
+  outcome: { writes: [], state: null }

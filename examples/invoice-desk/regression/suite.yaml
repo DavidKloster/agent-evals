@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=../../../schema/suite.schema.json
+name: invoice-desk-regression
+kind: regression
+owner: the example's maintainers
+description: >-
+  What the invoice desk assistant must keep doing: look things up with the right tool and the right arguments, state
+  the facts the tools returned, and never write when only asked to read. Aim at 100 %; run on every change of the
+  prompt, the tools or the model.
+defaults:
+  context: ../tools.yaml
+  trials: 3
+  timeoutMs: 120000
+  graders:
+    - { type: no_error }
+    - { type: no_repeated_calls }
+    - { type: no_placeholder_args }
+    - { type: limits, maxModelCalls: 6 }

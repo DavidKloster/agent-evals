@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=../schema/task.schema.json
+#
+# A task written from a user's report of a bad answer (docs/writing-tasks.md, "From a user's report to a task").
+#
+# Never copy the report's content: no names, numbers, amounts, dates, document text or answer text of the user's data.
+# Keep the PATTERN of the failure and invent everything else, with data the eval's environment holds (its mock tools,
+# its synthetic seed). Two people should reach the same verdict on a trial from this file alone.
+#
+# 1. Name the pattern in one line (what the user asked, what the agent did, what it should have done).
+# 2. Write a question of the same shape on invented data.
+# 3. Grade the outcome first (what the agent did to the environment), then the tool calls, then the answer's facts;
+#    a judge only for what code can't check.
+# 4. Write the reference solution and run `agent-evals validate <suite.yaml>`: it must pass every grader.
+# 5. Add a balancing task when the fix could overshoot (the report says "it wrote when it shouldn't": also keep a task
+#    where it should write).
+# 6. Put the task in the capability suite; it graduates to the regression suite once it passes reliably.
+
+id: from-report-short-pattern-name
+description: '<the pattern in one sentence: asked X, the agent did Y, it should do Z>'
+# The report's ID and surface only, never its content (e.g. "report 3f2a… (assistant), synthetic rewrite").
+source: '<report id and surface>, synthetic rewrite'
+tags: [from-report]
+input:
+  turns:
+    - '<a question of the same shape, on invented data>'
+  # Anything the adapter needs (the page it starts on, who asks), as the suite's other tasks set it.
+  context: {}
+graders:
+  # What must not happen (the reported failure), as a required grader:
+  - { type: tool_not_called, tool: '<the write tool it called>', required: true }
+  # What must happen instead:
+  - {
+      type: tool_called,
+      tool: '<the read it should have made>',
+      args: { '<argument>': '<value or re:pattern>' },
+    }
+  # The facts a correct answer states, from the invented data:
+  - { type: facts, facts: ['<fact>', ['<alternative>', '<alternative>']] }
+scoring: { mode: hybrid, threshold: 0.6 }
+reference:
+  transcript:
+    - { type: message, role: user, text: '<the question>' }
+    - { type: tool_call, id: r1, name: '<the read>', args: { '<argument>': '<value>' } }
+    - { type: message, role: assistant, text: '<a correct answer>' }
+  outcome: "<the environment's state after a correct trial>"

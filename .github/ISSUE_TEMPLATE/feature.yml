@@ -1,0 +1,24 @@
+name: Feature
+description: Propose a change to the harness, the metrics, the reports, the CLI or an adapter.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What you are trying to evaluate or measure, and why it is hard today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What you'd like, and how it would look in a task file, the config or the API.
+    validations:
+      required: true
+  - type: checkboxes
+    id: format
+    attributes:
+      label: Compatibility
+      options:
+        - label: This changes a file format (task, suite, transcript, run.json, labels, reviews) or the public API

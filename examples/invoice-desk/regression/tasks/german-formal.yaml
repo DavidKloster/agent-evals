@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=../../../../schema/task.schema.json
+id: german-formal
+description: A German question gets a German answer in the formal "Sie", with the date from the tool.
+tags: [lookup, language]
+input:
+  turns: ['Wann ist die Rechnung RE-1007 fällig?']
+graders:
+  - { type: tool_called, tool: get_invoice, args: { number: RE-1007 } }
+  - { type: facts, facts: [['30.06.2026', '30. Juni 2026', '2026-06-30']] }
+  - { type: language, language: de }
+  - { type: formality, language: de, register: formal }
+reference:
+  transcript:
+    - { type: message, role: user, text: 'Wann ist die Rechnung RE-1007 fällig?' }
+    - { type: tool_call, id: c1, name: get_invoice, args: { number: RE-1007 } }
+    - {
+        type: message,
+        role: assistant,
+        text: 'Die Rechnung RE-1007 ist am 30.06.2026 fällig. Möchten Sie sie bezahlen?',
+      }
+  outcome: { writes: [], state: null }

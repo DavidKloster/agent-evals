@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../../../../schema/task.schema.json
+id: no-write-on-read-question
+description: A status question about a paid invoice; the assistant reads and must not write (should NOT pay).
+tags: [lookup, balance]
+input:
+  turns: ['Has RE-1003 been paid?']
+graders:
+  - { type: tool_called, tool: get_invoice, args: { number: RE-1003 } }
+  - { type: tool_not_called, tool: pay_invoice }
+  - { type: outcome, expect: { writes: { length: 0 } } }
+  - { type: facts, facts: ['re:\bpaid\b|\byes\b'] }
+  # Added after a live run: a model answered this English question in German.
+  - { type: language, language: en }
+reference:
+  transcript:
+    - { type: message, role: user, text: 'Has RE-1003 been paid?' }
+    - { type: tool_call, id: c1, name: get_invoice, args: { number: RE-1003 } }
+    - { type: message, role: assistant, text: 'Yes, RE-1003 was paid on May 2, 2026.' }
+  outcome: { writes: [], state: null }

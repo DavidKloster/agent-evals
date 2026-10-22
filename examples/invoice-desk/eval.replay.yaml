@@ -1,0 +1,9 @@
+# A dry run of both suites without a model: the scripted adapter replays each task's reference solution. It proves the
+# suites, the graders and the reports work, costs nothing, and is what the package's own test runs.
+#   node src/cli.ts run --config examples/invoice-desk/eval.replay.yaml
+suites: [regression/suite.yaml, capability/suite.yaml]
+targets:
+  - { name: reference, adapter: scripted, options: { replayReference: true } }
+userSimulator: reference
+trials: 3
+out: results

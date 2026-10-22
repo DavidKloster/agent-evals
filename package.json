@@ -1,0 +1,75 @@
+{
+  "name": "@agent-evals/core",
+  "version": "0.1.0",
+  "description": "Evals for AI agents: tasks with reference solutions, trials, graders that check outcomes, pass@k and pass^k, calibrated model judges, transcripts and reports.",
+  "license": "Apache-2.0",
+  "author": "David Kloster",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavidKloster/agent-evals.git"
+  },
+  "homepage": "https://github.com/DavidKloster/agent-evals#readme",
+  "bugs": {
+    "url": "https://github.com/DavidKloster/agent-evals/issues"
+  },
+  "keywords": [
+    "evals",
+    "agents",
+    "llm",
+    "ai",
+    "testing",
+    "pass^k",
+    "llm-as-judge"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./schema/*": "./schema/*"
+  },
+  "bin": {
+    "agent-evals": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "src",
+    "schema",
+    "templates",
+    "NOTICE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "schema": "node src/cli.ts schema --write schema",
+    "schema:check": "node src/cli.ts schema --check schema",
+    "validate:examples": "node src/cli.ts validate examples/invoice-desk/regression/suite.yaml examples/invoice-desk/capability/suite.yaml && node src/cli.ts run --config examples/invoice-desk/eval.replay.yaml",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "yaml": "^2.9.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@types/node": "24.7.2",
+    "eslint": "9.39.5",
+    "globals": "17.12.0",
+    "prettier": "3.9.8",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.70.1",
+    "vitest": "5.0.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

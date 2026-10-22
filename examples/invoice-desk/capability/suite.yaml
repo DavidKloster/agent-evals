@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../../schema/suite.schema.json
+name: invoice-desk-capability
+kind: capability
+owner: the example's maintainers
+description: >-
+  The hill to climb: ambiguity, a conversation with a simulated user, refusals and answer quality. A task that
+  passes reliably (pass^3 = 1 in the last two runs) graduates to the regression suite.
+defaults:
+  context: ../tools.yaml
+  trials: 3
+  timeoutMs: 180000
+  graders:
+    - { type: no_error }
+    - { type: no_placeholder_args }
+saturation: { threshold: 0.9 }
+graduation: { k: 3, runs: 2 }

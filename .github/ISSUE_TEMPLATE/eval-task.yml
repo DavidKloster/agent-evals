@@ -1,0 +1,36 @@
+name: Eval task
+description: Contribute a task to the example suites (synthetic data only).
+labels: [eval-task]
+body:
+  - type: markdown
+    attributes:
+      value: A good task is unambiguous (two experts reach the same verdict), comes with a reference solution that passes its graders, and uses invented data only.
+  - type: textarea
+    id: pattern
+    attributes:
+      label: The behaviour it tests
+      description: What the agent should or should not do, and the real failure it comes from (described, not copied).
+    validations:
+      required: true
+  - type: textarea
+    id: task
+    attributes:
+      label: The task file
+      description: With its graders and its reference solution. `agent-evals validate` must pass on it.
+      render: yaml
+    validations:
+      required: true
+  - type: dropdown
+    id: suite
+    attributes:
+      label: Suite
+      options: [capability (hard, a hill to climb), regression (must keep passing)]
+    validations:
+      required: true
+  - type: checkboxes
+    id: data
+    attributes:
+      label: Data
+      options:
+        - label: Every name, number, date and text in this task is invented
+          required: true

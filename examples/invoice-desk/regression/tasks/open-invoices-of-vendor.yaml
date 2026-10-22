@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=../../../../schema/task.schema.json
+id: open-invoices-of-vendor
+description: A filtered list; the paid invoice of the same vendor must not be named as open.
+tags: [list]
+input:
+  turns: ['Which invoices from Schmidt Office Supplies are still open?']
+graders:
+  - { type: tool_called, tool: re:^(list_invoices)$, args: { vendor: 're:schmidt' } }
+  - { type: facts, facts: [RE-1001, RE-1007] }
+  - { type: forbid, patterns: [RE-1003] }
+  - { type: tool_not_called, tool: pay_invoice }
+reference:
+  transcript:
+    - {
+        type: message,
+        role: user,
+        text: 'Which invoices from Schmidt Office Supplies are still open?',
+      }
+    - { type: tool_call, id: c1, name: list_invoices, args: { vendor: Schmidt, status: open } }
+    - {
+        type: message,
+        role: assistant,
+        text: 'Two are open: RE-1001 (240.00 EUR) and RE-1007 (89.90 EUR).',
+      }
+  outcome: { writes: [], state: null }

@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=../../../../schema/task.schema.json
+id: pay-after-clarification
+description: >-
+  A conversation with a simulated user: the first request is ambiguous, the user answers the question back, and the
+  outcome is exactly one payment of the right invoice. Graded on the outcome, not on the path.
+tags: [write, ambiguity, multi-turn]
+input:
+  user:
+    persona: An accounts clerk at a small company, short and polite, writes in English.
+    goal: Pay the open Schmidt Office Supplies invoice of 89.90 EUR (you don't know its number). Nothing else.
+    firstMessage: 'Pay the Schmidt invoice.'
+    maxTurns: 4
+graders:
+  - {
+      type: outcome,
+      required: true,
+      expect:
+        { writes: { length: 1 }, 'writes[0].tool': pay_invoice, 'writes[0].args.number': RE-1007 },
+    }
+  - { type: no_repeated_calls }
+  - { type: limits, maxModelCalls: 10, maxTurns: 4 }
+scoring: { mode: hybrid, threshold: 0.8 }
+reference:
+  transcript:
+    - { type: message, role: user, text: 'Pay the Schmidt invoice.' }
+    - { type: tool_call, id: c1, name: list_invoices, args: { vendor: Schmidt, status: open } }
+    - {
+        type: message,
+        role: assistant,
+        text: 'Two are open: RE-1001 (240.00 EUR) and RE-1007 (89.90 EUR). Which one?',
+      }
+    - { type: message, role: user, text: 'The one for 89.90.' }
+    - { type: tool_call, id: c2, name: pay_invoice, args: { number: RE-1007 } }
+    - { type: message, role: assistant, text: 'Done: RE-1007 is paid.' }
+  outcome: { writes: [{ tool: pay_invoice, args: { number: RE-1007 } }], state: null }

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or idea
+    url: https://github.com/DavidKloster/agent-evals/discussions
+    about: Ask how to evaluate your agent, or discuss an idea before it becomes an issue.
+  - name: Security vulnerability
+    url: https://github.com/DavidKloster/agent-evals/security/advisories/new
+    about: Report it privately, never in a public issue (see SECURITY.md).

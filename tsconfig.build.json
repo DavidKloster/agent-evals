@@ -1,0 +1,15 @@
+{
+  "//": "The build of the published package (docs/maintainers/repository-design.md, \"Build\"): ESM and declarations from src/ into dist/, with the .ts import specifiers rewritten to .js.",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": ["src"]
+}

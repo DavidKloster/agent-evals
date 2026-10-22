@@ -1,0 +1,40 @@
+name: New grader
+description: Propose a built-in grader.
+labels: [grader, design]
+body:
+  - type: markdown
+    attributes:
+      value: Deterministic graders are preferred. Check first whether the existing graders and matchers can express it (docs/graders.md).
+  - type: textarea
+    id: checks
+    attributes:
+      label: What it checks
+      description: The behaviour or outcome it grades, and why it matters for agents.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why the existing graders can't do it
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options: [code (deterministic), model (a judge), human]
+    validations:
+      required: true
+  - type: textarea
+    id: params
+    attributes:
+      label: Parameters and an example
+      description: The grader as it would appear in a task file, with one transcript or outcome that passes and one that fails.
+      render: yaml
+    validations:
+      required: true
+  - type: textarea
+    id: calibration
+    attributes:
+      label: For a model grader, how it is calibrated
+      description: The rubric, and how you'd check its agreement with human labels.

@@ -1,0 +1,18 @@
+# The invoice desk against real models on OpenRouter, with a judge and a simulated user. Synthetic data only.
+#   export OPENROUTER_API_KEY=…   (never commit it)
+#   node src/cli.ts run --config examples/invoice-desk/eval.config.yaml
+suites: [regression/suite.yaml, capability/suite.yaml]
+targets:
+  - name: claude-haiku-5.5
+    adapter: openai-tools
+    options: { model: anthropic/claude-haiku-5.5, temperature: 0, maxRounds: 6 }
+  - name: claude-sonnet-5.5
+    adapter: openai-tools
+    options: { model: anthropic/claude-sonnet-5.5, temperature: 0, maxRounds: 6 }
+# One judge per dimension; a second model would make it a consensus of two.
+judge: { models: [anthropic/claude-sonnet-5.5] }
+userSimulator: { model: anthropic/claude-haiku-5.5 }
+trials: 3
+k: 3
+concurrency: 4
+out: results

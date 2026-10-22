@@ -1,0 +1,8 @@
+agent-evals
+Copyright 2026 David Kloster
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The evaluation method follows Anthropic's article "Demystifying evals for AI agents"
+(https://www.anthropic.com/research/demystifying-evals-for-ai-agents). Anthropic and Claude are
+trademarks of Anthropic, PBC. This project is not affiliated with or endorsed by Anthropic.

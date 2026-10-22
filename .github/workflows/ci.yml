@@ -1,0 +1,156 @@
+# The quality gates of every pull request and of main (docs/maintainers/repository-design.md, "Quality gates").
+# No job calls a model or needs an API key.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm run schema:check
+
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        # macOS and Windows minutes cost money on a private repository: they join once it is public.
+        os: ${{ fromJSON(github.event.repository.private && '["ubuntu-latest"]' || '["ubuntu-latest","macos-latest","windows-latest"]') }}
+        # The engines floor, then the latest of each LTS line.
+        node: ['22.18.0', '22', '24']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  package:
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22.18.0', '24']
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Pack and inspect the tarball
+        run: |
+          npm pack --json > pack.json
+          node -e "const [p] = require('./pack.json'); for (const f of p.files) console.log(f.path)"
+      - name: Install the tarball into an empty project and run it from node_modules
+        run: |
+          tarball="$PWD/$(node -p "require('./pack.json')[0].filename")"
+          smoke="$RUNNER_TEMP/smoke"
+          mkdir -p "$smoke" && cd "$smoke"
+          npm init -y > /dev/null
+          npm install "$tarball"
+          node --input-type=module -e "import { summarize, scriptedAdapter } from '@agent-evals/core'; if (typeof summarize !== 'function' || typeof scriptedAdapter !== 'function') process.exit(1)"
+          npx agent-evals validate "$GITHUB_WORKSPACE/examples/invoice-desk/regression/suite.yaml"
+
+  examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run validate:examples
+
+  pr-hygiene:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: The title is a Conventional Commit
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if ! printf '%s' "$TITLE" | grep -qE '^(feat|fix|docs|test|refactor|perf|build|ci|chore|revert)(\([a-z0-9-]+\))?!?: .+'; then
+            echo "::error::The PR title must be a Conventional Commit, e.g. 'feat(graders): add a json_schema grader'"
+            exit 1
+          fi
+      - name: Every commit is signed off (DCO)
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          missing=0
+          for commit in $(git rev-list --no-merges "$BASE..$HEAD"); do
+            author=$(git log -1 --format='%an <%ae>' "$commit")
+            # Bots (Dependabot, the release app) sign nothing; their commits come from the project's own automation.
+            case "$(git log -1 --format='%an' "$commit")" in *'[bot]') continue ;; esac
+            if ! git log -1 --format='%B' "$commit" | grep -qiF "Signed-off-by: $author"; then
+              echo "::error::$commit has no 'Signed-off-by: $author' (use git commit -s)"
+              missing=1
+            fi
+          done
+          exit "$missing"
+
+  dependency-review:
+    # Needs the dependency graph, which a private repository on a free plan doesn't have.
+    if: github.event_name == 'pull_request' && !github.event.repository.private
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: moderate
+          deny-licenses: GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-only, GPL-3.0-or-later, AGPL-3.0-only, AGPL-3.0-or-later
+          comment-summary-in-pr: on-failure
+
+  # The one check branch protection requires: matrix jobs report under names like "test (ubuntu-latest, 24)".
+  ci-ok:
+    if: always()
+    needs: [check, test, package, examples, pr-hygiene]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every required job passed or was skipped
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          for result in $RESULTS; do
+            case "$result" in success|skipped) ;; *) echo "::error::a required job ended $result"; exit 1 ;; esac
+          done
