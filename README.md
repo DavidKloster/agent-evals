@@ -4,7 +4,7 @@ Evals for AI agents that you can trust: tasks as files with reference solutions,
 
 The method follows Anthropic's article [Demystifying evals for AI agents](https://www.anthropic.com/research/demystifying-evals-for-ai-agents). This package is an independent implementation of it for TypeScript and Node.
 
-> **Status:** 0.x, before the first npm release. The API may still change in minor releases ([stability policy](docs/stability.md)). Used in production by Acriva, a document management system whose AI assistant and document chat are evaluated with it.
+> **Status:** 0.x, before the first npm release. The API may still change in minor releases ([stability policy](docs/stability.md)).
 
 ## Why
 
