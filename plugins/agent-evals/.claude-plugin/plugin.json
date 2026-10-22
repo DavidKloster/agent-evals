@@ -1,0 +1,10 @@
+{
+  "name": "agent-evals",
+  "version": "0.1.0",
+  "description": "Skills for evaluating AI agents with @agent-evals/core: suites, graders, pass@k and pass^k, reports, and eval tasks from failures.",
+  "author": { "name": "David Kloster" },
+  "homepage": "https://github.com/DavidKloster/agent-evals/blob/main/docs/claude-code.md",
+  "repository": "https://github.com/DavidKloster/agent-evals",
+  "license": "Apache-2.0",
+  "keywords": ["evals", "agents", "llm", "pass@k", "pass^k", "llm-as-judge", "testing"]
+}

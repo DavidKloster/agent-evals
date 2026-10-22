@@ -48,6 +48,17 @@ With a key for an OpenAI-compatible API (OpenRouter by default), the same suites
 OPENROUTER_API_KEY=… npx agent-evals run --config examples/invoice-desk/eval.config.yaml
 ```
 
+## Use it from Claude Code
+
+The repository is a Claude Code plugin marketplace with skills that set up evals, read the reports and turn a failure into a task:
+
+```text
+/plugin marketplace add DavidKloster/agent-evals
+/plugin install agent-evals@agent-evals
+```
+
+Or in one step on Claude Code 2.1.275 and later: `/plugin install agent-evals --marketplace DavidKloster/agent-evals`. Copying a skill folder works too, also for other agents that read the Agent Skills format: see [Claude Code plugin](docs/claude-code.md).
+
 ## A task
 
 A task is a small YAML file: the input, the graders, and a reference solution that passes them.

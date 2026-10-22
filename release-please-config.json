@@ -7,7 +7,14 @@
     ".": {
       "package-name": "@agent-evals/core",
       "changelog-path": "CHANGELOG.md",
-      "release-as": "0.1.0"
+      "release-as": "0.1.0",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "plugins/agent-evals/.claude-plugin/plugin.json",
+          "jsonpath": "$.version"
+        }
+      ]
     }
   }
 }
