@@ -12,5 +12,3 @@
 ### Bug Fixes
 
 * portable paths, so the tests pass on Windows ([70b6a7b](https://github.com/DavidKloster/agent-evals/commit/70b6a7b853fa3c219faea0d03a16de4714d7f014))
-
-## Changelog
