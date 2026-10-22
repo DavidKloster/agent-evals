@@ -18,6 +18,8 @@ concurrency:
 
 jobs:
   release-please:
+    # Skipped until the owner has created the release app and stored RELEASE_APP_ID: without it the job could only fail.
+    if: vars.RELEASE_APP_ID != ''
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
