@@ -374,7 +374,7 @@ writeFileSync(
 
 const suite = loadSuite(join(dir, 'suite.yaml'));
 assert.equal(suite.tasks[0]!.input.context!.system, 'Answer briefly.');
-assert.equal(suite.tasks[0]!.file, join('tasks', 'tasks.yaml'));
+assert.equal(suite.tasks[0]!.file, 'tasks/tasks.yaml');
 
 const check = await validateSuite(suite, { graders: builtinGraders() });
 assert.equal(check.ok, false);

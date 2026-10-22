@@ -114,7 +114,7 @@ export interface Task {
   reference?: ReferenceSolution;
   /** Why the task exists: the issue, the failure it comes from. */
   source?: string;
-  /** The file the task was loaded from. */
+  /** The file the task was loaded from, relative to the suite file, with `/` as the separator on every OS. */
   file?: string;
 }
 
@@ -327,7 +327,7 @@ export interface TrialResult {
   passed: boolean;
   metrics: TrialMetrics;
   transcript: Transcript;
-  /** The JSONL file of the transcript, relative to the run's folder. */
+  /** The JSONL file of the transcript, relative to the run's folder, with `/` as the separator on every OS. */
   transcriptFile?: string;
   startedAt: string;
 }
