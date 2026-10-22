@@ -210,7 +210,7 @@ describe('runEval', () => {
       outDir: out,
     });
     const file = run.trials[0]!.transcriptFile!;
-    expect(file).toBe(join('transcripts', 'demo', 'model_a', 'lookup.0.jsonl'));
+    expect(file).toBe('transcripts/demo/model_a/lookup.0.jsonl');
     const lines = readFileSync(join(out, file), 'utf8')
       .trim()
       .split('\n')

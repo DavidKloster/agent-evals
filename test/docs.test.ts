@@ -161,7 +161,10 @@ describe('the documentation', () => {
 describe('ts doctest blocks run', () => {
   for (const block of doctests) {
     it(nameOf(block), { timeout: 60_000 }, async () => {
-      const code = block.code.replace(/(['"])@agent-evals\/core\1/g, () => `'${entry}'`);
+      // A Windows path in a string literal would lose its backslashes as escapes; Vite takes forward slashes.
+      const code = block.code.replace(/(['"])@agent-evals\/core\1/g, () =>
+        JSON.stringify(entry.split(sep).join('/')),
+      );
       const file = join(
         temp(),
         `${nameOf(block).replace(/[^a-zA-Z0-9]+/g, '-')}-${doctests.indexOf(block)}.ts`,

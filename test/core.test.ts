@@ -87,9 +87,9 @@ describe('loadSuite', () => {
     const suite = loadSuite(join(dir, 'suite.yaml'));
     expect(suite).toMatchObject({ name: 'demo', kind: 'regression', owner: 'evals', dir });
     expect(suite.tasks.map((t) => [t.id, t.file])).toEqual([
-      ['a1', join('tasks', 'a.json')],
-      ['a2', join('tasks', 'a.json')],
-      ['b', join('tasks', 'b.yaml')],
+      ['a1', 'tasks/a.json'],
+      ['a2', 'tasks/a.json'],
+      ['b', 'tasks/b.yaml'],
     ]);
   });
 

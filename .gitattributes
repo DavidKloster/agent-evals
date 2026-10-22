@@ -1,0 +1,2 @@
+# LF on every OS, so that `prettier --check` and `schema --check` (a byte comparison) pass on a Windows checkout too.
+* text=auto eol=lf

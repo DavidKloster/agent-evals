@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, posix } from 'node:path';
 
 import { completeTranscript, metricsOf } from '../core/transcript.ts';
 import {
@@ -401,7 +401,8 @@ async function runTrial(
   const { score, passed } = scoreOf(grades, scoringOf(task, suite));
   let transcriptFile: string | undefined;
   if (options.outDir) {
-    transcriptFile = join(
+    // Stored in run.json, so it reads the same on every OS.
+    transcriptFile = posix.join(
       'transcripts',
       slug(suite.name),
       slug(target.name),
