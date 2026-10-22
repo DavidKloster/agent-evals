@@ -76,6 +76,26 @@ export interface EvalConfig {
   meta?: Record<string, unknown>;
 }
 
+/** Every key a configuration reads; the record's type keeps the list complete. Other keys are ignored. */
+const configKeyRecord: Record<keyof EvalConfig, true> = {
+  suites: true,
+  targets: true,
+  graders: true,
+  factMatchers: true,
+  judge: true,
+  userSimulator: true,
+  trials: true,
+  k: true,
+  concurrency: true,
+  retries: true,
+  timeoutMs: true,
+  hookTimeoutMs: true,
+  out: true,
+  hooks: true,
+  meta: true,
+};
+export const configKeys = Object.keys(configKeyRecord) as (keyof EvalConfig)[];
+
 export interface ResolvedConfig {
   suites: Suite[];
   targets: Target[];

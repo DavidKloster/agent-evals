@@ -1,0 +1,13 @@
+{
+  "name": "agent-evals",
+  "owner": { "name": "David Kloster" },
+  "description": "Claude Code skills for agent-evals: set up, run and read evals for AI agents, and turn failures into eval tasks.",
+  "plugins": [
+    {
+      "name": "agent-evals",
+      "source": "./plugins/agent-evals",
+      "description": "Skills for evaluating AI agents with @agent-evals/core: suites, graders, pass@k and pass^k, reports, and eval tasks from failures.",
+      "category": "testing"
+    }
+  ]
+}

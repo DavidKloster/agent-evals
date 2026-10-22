@@ -55,6 +55,7 @@ The owner took D7, D19 and D20 as recommended on 2026-10-22 and chose the npm or
 
 ```text
 agent-evals/
+├── .claude-plugin/            marketplace.json: the repository as a Claude Code marketplace
 ├── .github/
 │   ├── CODEOWNERS
 │   ├── dependabot.yml
@@ -64,6 +65,7 @@ agent-evals/
 ├── docs/                      the implementation docs (index: docs/README.md)
 │   └── maintainers/           this design
 ├── examples/invoice-desk/     a complete pair of suites (regression, capability)
+├── plugins/agent-evals/       the Claude Code plugin: plugin.json and the skills (docs/claude-code.md)
 ├── schema/                    task.schema.json, suite.schema.json (generated)
 ├── src/                       the package
 ├── templates/                 task-from-report.yaml
@@ -74,7 +76,7 @@ agent-evals/
 └── release-please-config.json  .release-please-manifest.json
 ```
 
-`dist/`, `node_modules/` and `examples/*/results/` are ignored. The npm tarball holds `dist/`, `schema/`, `templates/`, `README.md`, `LICENSE`, `NOTICE` and `CHANGELOG.md` (`files` in `package.json`); the examples and the docs stay in the repository and are linked.
+`dist/`, `node_modules/` and `examples/*/results/` are ignored. The npm tarball holds `dist/`, `src/`, `schema/`, `templates/`, `README.md`, `LICENSE`, `NOTICE` and `CHANGELOG.md` (`files` in `package.json`); the examples and the docs stay in the repository and are linked. The Claude Code plugin (`.claude-plugin/`, `plugins/`) installs from git and stays out of the tarball.
 
 ## Build
 
@@ -85,7 +87,7 @@ agent-evals/
 | Imports                  | Sources keep `.ts` specifiers; `rewriteRelativeImportExtensions` rewrites them to `.js`                                                                                                                                                                                                       |
 | Entry points             | `exports: { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }, "./schema/*": "./schema/*" }`                                                                                                                                                                                |
 | CLI                      | `bin: { "agent-evals": "dist/cli.js" }`, written **without** a leading `./`: npm 11's `publish` drops a bin path written as `./dist/cli.js` ("script name … was invalid and removed"), which the extraction dry run caught. `src/cli.ts` starts with `#!/usr/bin/env node`, which `tsc` keeps |
-| Tarball (`files`)        | `dist/`, `src/` (the source maps point into it), `schema/`, `templates/`, `NOTICE`, `CHANGELOG.md`, plus what npm always adds (`package.json`, `README.md`, `LICENSE`): 178 files, 235 kB packed in the dry run                                                                               |
+| Tarball (`files`)        | `dist/`, `src/` (the source maps point into it), `schema/`, `templates/`, `NOTICE`, `CHANGELOG.md`, plus what npm always adds (`package.json`, `README.md`, `LICENSE`): 183 files, 240 kB packed in the dry run; not the Claude Code plugin                                                   |
 | Scripts (`package.json`) | `build`, `typecheck`, `lint` (ESLint, the package's own `eslint.config.js`), `format` / `format:check` (Prettier, `.prettierrc.json`), `test` (vitest), `schema` / `schema:check`, `validate:examples` (`agent-evals validate` of both example suites and a replay run), `prepack`            |
 | Smoke test               | CI packs the tarball, installs it into an empty project, imports the package and runs `agent-evals validate` from `node_modules`, the same check that proved D13                                                                                                                              |
 
@@ -100,6 +102,7 @@ Running from source (`node src/cli.ts …`) keeps working in a checkout, since N
 | `check`             | `npm ci`, `lint`, `format:check`, `typecheck`, `schema:check`                                                                              | Node 24, Linux                                               |
 | `test`              | `npm ci`, `npm test` (the package's tests, the examples' reference check, the doc-test of every runnable sample in the README and `docs/`) | Node 22.18.0, 22, 24 × Linux (macOS and Windows once public) |
 | `package`           | `build`, `npm pack`, install the tarball into an empty project, import it, run the CLI from `node_modules`                                 | Node 22.18.0 and 24, Linux                                   |
+| `plugin`            | `claude plugin validate --strict` of the marketplace and the plugin (the skills' drift is checked by `npm test`)                           | Node 24, Linux                                               |
 | `ci-ok`             | Passes when every job above passed or was skipped: the required check                                                                      | always                                                       |
 | `examples`          | `validate:examples`                                                                                                                        | Node 24, Linux                                               |
 | `pr-hygiene`        | Conventional Commit PR title, `Signed-off-by:` on every commit of the PR (D7)                                                              | pull requests only                                           |
@@ -129,7 +132,7 @@ sequenceDiagram
 - **Build, then publish.** The `build` job checks out the tag, runs the tests and the build, packs the tarball and uploads it, without any publishing right. The `publish` job runs in the GitHub environment `npm` whose required reviewer is the owner, so every release to npm is the owner's explicit go. It has `id-token: write`, installs nothing and runs no dependency's code: it downloads the tarball and runs `npm publish ./*.tgz --provenance --access public` with the npm CLI bundled with Node 24 (trusted publishing needs npm 11.5.1 or later). No npm token exists in the repository or its secrets.
 - **Provenance needs a public repository.** npm attaches provenance only for packages built from a public source repository, so the first release PR merges after the repository is public.
 - **The first release.** npm's trusted publishing is configured per package on npmjs.com, by the owner as an admin of the organization `agent-evals`. If npm doesn't allow that before the package exists, the owner publishes 0.1.0 once from their own machine with 2FA (`npm publish --access public` from a clean checkout of the tag, after `npm run build`), then configures the trusted publisher, and every later release goes through the workflow. Either way no token is stored.
-- **Configuration:** `release-please-config.json` and `.release-please-manifest.json` (both in the folder). The config's `release-as: 0.1.0` makes the first release 0.1.0; remove it in the release PR's follow-up, after which the Conventional Commits decide.
+- **Configuration:** `release-please-config.json` and `.release-please-manifest.json` (both in the folder). Its `extra-files` bump the Claude Code plugin's `version` in `plugins/agent-evals/.claude-plugin/plugin.json` with the package's. The config's `release-as: 0.1.0` makes the first release 0.1.0; remove it in the release PR's follow-up, after which the Conventional Commits decide.
 - **Pre-releases** (`0.2.0-rc.1`) go to the `next` dist-tag by hand through the same environment, when needed.
 
 ## Dependency policy
