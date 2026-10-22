@@ -1,5 +1,6 @@
 # Weekly, grouped dependency PRs with a 14-day cooldown: a version is a fortnight old before it is proposed
-# (docs/maintainers/repository-design.md, "Dependency policy").
+# (docs/maintainers/repository-design.md, "Dependency policy"). The npm groups take minor and patch updates only: a
+# major update (TypeScript, ESLint, @types/node) comes as a PR of its own, so one breaking change can't hold up the rest.
 version: 2
 updates:
   - package-ecosystem: npm
@@ -11,8 +12,10 @@ updates:
     groups:
       dev-dependencies:
         dependency-type: development
+        update-types: [minor, patch]
       runtime-dependencies:
         dependency-type: production
+        update-types: [minor, patch]
     commit-message:
       prefix: build
       include: scope

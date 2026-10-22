@@ -136,7 +136,7 @@ sequenceDiagram
 
 - Runtime dependencies stay few: today `zod` and `yaml`. A new runtime dependency needs a reason in its PR and a permissive licence (MIT, ISC, BSD, Apache-2.0); copyleft is refused.
 - Ranges per D22; `package-lock.json` is committed; CI uses `npm ci`.
-- Dependabot opens grouped weekly PRs for npm and GitHub Actions, with a 14-day cooldown so a version is a fortnight old before it is proposed.
+- Dependabot opens grouped weekly PRs for npm and GitHub Actions, with a 14-day cooldown so a version is a fortnight old before it is proposed. The npm groups hold minor and patch updates; each major update comes as a PR of its own.
 - Actions are pinned by commit SHA with the version in a comment; Dependabot updates both.
 
 ## Security
