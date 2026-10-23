@@ -255,18 +255,25 @@ At least one of them is required. One assertion per limit given, `at most <n> <w
 
 The answer is in the expected language, by a cheap count of stop words.
 
-| Parameter  | Type                | Required | Default  | Meaning                |
-| ---------- | ------------------- | -------- | -------- | ---------------------- |
-| `language` | `de` \| `en`        | yes      |          | The expected language. |
-| `on`       | `answer` \| `final` | no       | `answer` | As for `facts`.        |
+| Parameter   | Type                | Required | Default  | Meaning                                                      |
+| ----------- | ------------------- | -------- | -------- | ------------------------------------------------------------ |
+| `language`  | `de` \| `en`        | yes      |          | The expected language.                                       |
+| `on`        | `answer` \| `final` | no       | `answer` | As for `facts`.                                              |
+| `onUnknown` | `fail` \| `ignore`  | no       | `fail`   | What a tie means; see [Unknown verdicts](#unknown-verdicts). |
 
 Fenced code blocks, inline code, Markdown link targets and URLs are removed first. The words (runs of
 letters) are lower-cased and counted against a list of frequent function words that only one of the
-two languages has. The grader passes when the expected language has **more** stop words than the
-other; a tie fails, an answer without any stop word too. The counts are the assertion's `actual`.
+two languages has (articles, pronouns, question words, conjunctions). The grader passes when the
+expected language has **more** stop words than the other and fails when the other has more. A tie,
+an answer without any stop word too, is no evidence either way: the verdict is **unknown**, which
+fails by default. The counts are the assertion's `actual`.
+
+A short reply can hold no stop word at all ("Zwei Kunden passen: Beispiel GmbH, Beispiel Service
+GmbH."). As a suite default, `onUnknown: ignore` sets such a reply aside instead of failing it; an
+answer with more stop words of the other language still fails.
 
 ```yaml
-{ type: language, language: en }
+{ type: language, language: de, onUnknown: ignore }
 ```
 
 ### `formality`
@@ -565,8 +572,9 @@ For each grader that runs:
 
 ### Unknown verdicts
 
-A grader can report that it could not decide (the `judge` does when a dimension is unknown). The
-grader parameter `onUnknown`, read for every grader type, decides what that means:
+A grader can report that it could not decide (the `judge` does when a dimension is unknown, the
+`language` grader on a tie). The grader parameter `onUnknown`, read for every grader type, decides
+what that means:
 
 - `fail` (the default): the grader does not pass, and its score counts with its weight;
 - `ignore`: only what is unknown is set aside. A grader marks its undecided assertions with
