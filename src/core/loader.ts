@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { dirname, extname, join, relative, resolve } from 'node:path';
+import { dirname, extname, join, relative, resolve, sep } from 'node:path';
 
 import { parse } from 'yaml';
 import type { z } from 'zod';
@@ -79,7 +79,9 @@ export function loadSuite(file: string): Suite {
     }
     for (const taskFile of taskFiles(resolve(dir, taskPath))) {
       try {
-        tasks.push(...parseTasks(readDataFile(taskFile), relative(dir, taskFile)));
+        // The task's file is named the same way on every OS: relative to the suite, with forward slashes.
+        const label = relative(dir, taskFile).split(sep).join('/');
+        tasks.push(...parseTasks(readDataFile(taskFile), label));
       } catch (error) {
         errors.push(error instanceof Error ? error.message : String(error));
       }

@@ -4,7 +4,7 @@ Evals for AI agents that you can trust: tasks as files with reference solutions,
 
 The method follows Anthropic's article [Demystifying evals for AI agents](https://www.anthropic.com/research/demystifying-evals-for-ai-agents). This package is an independent implementation of it for TypeScript and Node.
 
-> **Status:** 0.x, before the first npm release. The API may still change in minor releases ([stability policy](docs/stability.md)). Used in production by Acriva, a document management system whose AI assistant and document chat are evaluated with it.
+> **Status:** 0.x, before the first npm release. The API may still change in minor releases ([stability policy](docs/stability.md)).
 
 ## Why
 
@@ -47,6 +47,17 @@ With a key for an OpenAI-compatible API (OpenRouter by default), the same suites
 ```sh
 OPENROUTER_API_KEY=… npx agent-evals run --config examples/invoice-desk/eval.config.yaml
 ```
+
+## Use it from Claude Code
+
+The repository is a Claude Code plugin marketplace with skills that set up evals, read the reports and turn a failure into a task:
+
+```text
+/plugin marketplace add DavidKloster/agent-evals
+/plugin install agent-evals@agent-evals
+```
+
+Or in one step on Claude Code 2.1.275 and later: `/plugin install agent-evals --marketplace DavidKloster/agent-evals`. Copying a skill folder works too, also for other agents that read the Agent Skills format: see [Claude Code plugin](docs/claude-code.md).
 
 ## A task
 

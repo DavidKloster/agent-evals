@@ -5,3 +5,7 @@ coverage/
 schema/
 # A run's results (agent-evals run).
 examples/*/results/
+# Written by release-please in its own format on every release.
+CHANGELOG.md
+.release-please-manifest.json
+plugins/agent-evals/.claude-plugin/plugin.json

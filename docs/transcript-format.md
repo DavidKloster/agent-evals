@@ -318,7 +318,7 @@ left out), `saturation` is the suite file's `{ threshold }` and `graduation` its
 | `passed`         | boolean                             | yes      | The task's verdict under its scoring mode. Only a `completed`, graded trial can pass.                                                                                                                                                        |
 | `metrics`        | [`TrialMetrics`](#trialmetrics)     | yes      | Numbers from the transcript.                                                                                                                                                                                                                 |
 | `transcript`     | event[]                             | yes      | The last attempt's transcript.                                                                                                                                                                                                               |
-| `transcriptFile` | string                              | no       | The JSONL file, relative to the run folder (with the platform's path separator). Present when the run had an output folder.                                                                                                                  |
+| `transcriptFile` | string                              | no       | The JSONL file, relative to the run folder, with `/` as the separator on every OS. Present when the run had an output folder.                                                                                                                |
 | `startedAt`      | string (ISO 8601)                   | yes      | When the last attempt started.                                                                                                                                                                                                               |
 
 ### Statuses
@@ -648,7 +648,7 @@ const run = await runEval({
 
 // The transcript file: one event per line, in the order they were recorded.
 const trial = run.trials[0]!;
-assert.equal(trial.transcriptFile, join('transcripts', 'demo', 'bot', 'greet.0.jsonl'));
+assert.equal(trial.transcriptFile, 'transcripts/demo/bot/greet.0.jsonl');
 const events = readFileSync(join(out, trial.transcriptFile!), 'utf8')
   .split('\n')
   .filter((line) => line !== '')
