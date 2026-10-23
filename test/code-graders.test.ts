@@ -374,6 +374,39 @@ describe('language', () => {
     expect(passed(grade('language', code, { language: 'de' }))).toBe(true);
     expect(passed(grade('language', [], { language: 'en' }))).toBe(false);
   });
+
+  it('passes short German replies and fails English ones of the same length', () => {
+    for (const text of [
+      'Offene Posten gibt es im Assistenten nicht.',
+      'Für welchen Kunden ist das Angebot?',
+      'Bitte auf der Karte prüfen und dort bestätigen.',
+      'Zwei Kunden passen: 1. Beispiel GmbH (10002), 2. Beispiel Service GmbH (10003). Welchen meinst du?',
+      'Wofür benötigen Sie die Geräte?',
+      'Welches Modell meinen Sie genau?',
+    ]) {
+      expect(passed(grade('language', [assistant(text)], { language: 'de' })), text).toBe(true);
+    }
+    for (const text of [
+      'Two customers match: 1. Example Ltd (10002), 2. Example Service Ltd (10003). Which one do you mean?',
+      'What do you need the devices for?',
+      'Which model do you mean exactly?',
+    ]) {
+      const output = grade('language', [assistant(text)], { language: 'de' });
+      expect(passed(output), text).toBe(false);
+      expect(output.unknown, text).toBeFalsy();
+    }
+  });
+
+  it('is unknown when neither language has more stop words', () => {
+    for (const text of [
+      'Zwei Kunden passen: 1. Beispiel GmbH (10002), 2. Beispiel Service GmbH (10003).',
+      'Siehe Anhang und the changelog.',
+    ]) {
+      const output = grade('language', [assistant(text)], { language: 'de' });
+      expect(output.unknown, text).toBe(true);
+      expect(output.assertions[0], text).toMatchObject({ passed: false, unknown: true });
+    }
+  });
 });
 
 describe('formality', () => {
