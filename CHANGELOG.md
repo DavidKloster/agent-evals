@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/DavidKloster/agent-evals/compare/v0.1.0...v0.2.0) (2026-10-23)
+
+
+### Features
+
+* **adapters:** add a command adapter for agents in any language ([#25](https://github.com/DavidKloster/agent-evals/issues/25)) ([61daf72](https://github.com/DavidKloster/agent-evals/commit/61daf7242fef0218bc34b2041fda39290e31c20d))
+
+
+### Bug Fixes
+
+* **graders:** language recognises short German replies and calls a tie unknown ([#22](https://github.com/DavidKloster/agent-evals/issues/22)) ([bc77ffb](https://github.com/DavidKloster/agent-evals/commit/bc77ffb1ed0eba85c3ef0e131da033ca0263721c)), closes [#20](https://github.com/DavidKloster/agent-evals/issues/20)
+
 ## 0.1.0 (2026-10-22)
 
 

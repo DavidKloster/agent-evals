@@ -1,6 +1,6 @@
 {
   "name": "@agent-evals/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Evals for AI agents: tasks with reference solutions, trials, graders that check outcomes, pass@k and pass^k, calibrated model judges, transcripts and reports.",
   "license": "Apache-2.0",
   "author": "David Kloster",

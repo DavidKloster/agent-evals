@@ -1,6 +1,6 @@
 {
   "name": "agent-evals",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Skills for evaluating AI agents with @agent-evals/core: suites, graders, pass@k and pass^k, reports, and eval tasks from failures.",
   "author": {
     "name": "David Kloster"
