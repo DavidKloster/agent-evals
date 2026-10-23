@@ -325,12 +325,12 @@ Keys outside this table are ignored.
 A target is an adapter with its options: what a run compares (models, prompts, configurations). In a
 YAML or JSON file, a target names a built-in adapter:
 
-| Field         | Type                                       | Required | Meaning                                                           |
-| ------------- | ------------------------------------------ | -------- | ----------------------------------------------------------------- |
-| `name`        | string                                     | yes      | The target's name in results and reports.                         |
-| `adapter`     | `openai-tools` \| `scripted` \| `http-sse` | yes      | The built-in adapter.                                             |
-| `options`     | object                                     | yes      | The adapter's options, below.                                     |
-| `description` | string                                     | no       | Shown in the report. For `openai-tools` it defaults to the model. |
+| Field         | Type                                                    | Required | Meaning                                                           |
+| ------------- | ------------------------------------------------------- | -------- | ----------------------------------------------------------------- |
+| `name`        | string                                                  | yes      | The target's name in results and reports.                         |
+| `adapter`     | `openai-tools` \| `scripted` \| `http-sse` \| `command` | yes      | The built-in adapter.                                             |
+| `options`     | object                                                  | yes      | The adapter's options, below.                                     |
+| `description` | string                                                  | no       | Shown in the report. For `openai-tools` it defaults to the model. |
 
 **`openai-tools`**: a chat-with-tools loop against an OpenAI-compatible chat completions API, with the
 task's [mock tools](task-and-suite-files.md#mock-tools). Each user turn calls the model until it
@@ -374,6 +374,24 @@ values, written into the file as they are). The default event mapper reads the e
 `tool_call`, `tool_result`, `usage`, `done` and `error`. Opening a session, a custom body, a custom
 mapper, reading the outcome and closing need a module configuration; see [Extending](extending.md).
 
+**`command`**: your agent as a process, in any language. Each trial starts the program, writes a
+start record and then each user message as a JSON line to its stdin, and reads the `http-sse`
+adapter's events, plus `note` and `outcome`, as JSON lines from its stdout. The protocol, its errors
+and a complete Python script are in [Evaluating a Python agent](python-agents.md).
+
+| Option    | Type     | Default               | Meaning                                                                |
+| --------- | -------- | --------------------- | ---------------------------------------------------------------------- |
+| `command` | string[] | required              | The program and its arguments. It is started without a shell.          |
+| `cwd`     | string   | the current directory | The working directory. A relative path is relative to the config file. |
+| `env`     | object   |                       | Environment variables set over the environment of `agent-evals`.       |
+
+```yaml
+targets:
+  - name: python-agent
+    adapter: command
+    options: { command: [uv, run, python, -m, my_agent.eval], cwd: ../agent }
+```
+
 In a module configuration, a target can also be any object `{ name, adapter, description? }` whose
 `adapter` has a `start(trialContext)` method.
 
@@ -409,7 +427,8 @@ The keys are read when the configuration is resolved, before any trial runs. A v
 missing or empty fails the command with `the environment variable <name> holds no API key`. The key is
 sent as `Authorization: Bearer <key>` and is never written to a result. `validate --config` and
 `regrade` ignore the configuration's targets, so they need only the judge's key, and only when the
-configuration has a judge. No other environment variable is read.
+configuration has a judge. No other environment variable is read. A `command` target's process
+gets the whole environment, with the target's `env` set over it.
 
 ### Hooks
 
