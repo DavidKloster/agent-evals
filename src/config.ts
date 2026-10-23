@@ -1,6 +1,7 @@
 import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { commandAdapter, type CommandOptions } from './adapters/command.ts';
 import { httpSseAdapter } from './adapters/http-sse.ts';
 import { openAIToolsAdapter, type OpenAIToolsOptions } from './adapters/openai-tools.ts';
 import { scriptedAdapter, type ScriptedOptions } from './adapters/scripted.ts';
@@ -36,7 +37,8 @@ export type TargetSpec =
       description?: string;
       adapter: 'http-sse';
       options: { url: string; headers?: Record<string, string> };
-    };
+    }
+  | { name: string; description?: string; adapter: 'command'; options: CommandOptions };
 
 /**
  * A run's configuration: in YAML or JSON for the built-in adapters, or as the default export of a TypeScript module for
@@ -134,7 +136,7 @@ function client(spec: EndpointSpec, model: string, env: NodeJS.ProcessEnv): Open
   });
 }
 
-function target(spec: Target | TargetSpec, env: NodeJS.ProcessEnv): Target {
+function target(spec: Target | TargetSpec, baseDir: string, env: NodeJS.ProcessEnv): Target {
   if (!('adapter' in spec) || typeof spec.adapter !== 'string') return spec;
   const { name, description } = spec;
   switch (spec.adapter) {
@@ -158,6 +160,19 @@ function target(spec: Target | TargetSpec, env: NodeJS.ProcessEnv): Target {
         description,
         adapter: httpSseAdapter({ url: spec.options.url, headers: spec.options.headers }),
       };
+    case 'command': {
+      const { command, cwd, env: variables } = spec.options;
+      return {
+        name,
+        description,
+        // A relative cwd is the config's, like every other path in it.
+        adapter: commandAdapter({
+          command,
+          cwd: cwd === undefined ? undefined : resolve(baseDir, cwd),
+          env: variables,
+        }),
+      };
+    }
   }
 }
 
@@ -202,7 +217,7 @@ export function resolveConfig(
     };
   return {
     suites,
-    targets: config.targets.map((t) => target(t, env)),
+    targets: config.targets.map((t) => target(t, baseDir, env)),
     graders,
     judge,
     judgeModels,

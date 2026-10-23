@@ -154,15 +154,17 @@ error is retried, `retries` times at most (default 2). If every attempt fails, t
 
 The messages and their usual causes:
 
-| Message                                               | Cause                                                                            |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `HTTP 429 from …`, `HTTP 502/503/504 …`, `HTTP 408 …` | The provider or the agent is busy or down, or the eval account hit a rate limit. |
-| `the request to … failed: …`, `POST … failed: …`      | A connection failure: wrong URL, the stack is not up, a network problem.         |
-| `the stream failed: …`                                | The provider reported an error with a 5xx code inside the stream.                |
-| `the stream of … ended without a last event`          | The `http-sse` agent closed the stream without a `done` or `error` event.        |
-| `beforeTrial failed: …`                               | The `beforeTrial` hook threw: resetting the environment failed.                  |
-| `beforeTrial took longer than <n> ms`                 | The `beforeTrial` hook ran past `hookTimeoutMs` (default 60 000 ms).             |
-| `the simulated user failed: …`                        | The simulated user's model call failed.                                          |
+| Message                                                 | Cause                                                                                                                  |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `HTTP 429 from …`, `HTTP 502/503/504 …`, `HTTP 408 …`   | The provider or the agent is busy or down, or the eval account hit a rate limit.                                       |
+| `the request to … failed: …`, `POST … failed: …`        | A connection failure: wrong URL, the stack is not up, a network problem.                                               |
+| `the stream failed: …`                                  | The provider reported an error with a 5xx code inside the stream.                                                      |
+| `the stream of … ended without a last event`            | The `http-sse` agent closed the stream without a `done` or `error` event.                                              |
+| `could not start <program>: …`                          | The `command` target's program is not found or not executable: check `command` and `cwd`.                              |
+| `the command exited with code 75 before its turn ended` | The `command` agent said a system it needs is down ([exit code 75](python-agents.md#errors-and-the-end-of-a-process)). |
+| `beforeTrial failed: …`                                 | The `beforeTrial` hook threw: resetting the environment failed.                                                        |
+| `beforeTrial took longer than <n> ms`                   | The `beforeTrial` hook ran past `hookTimeoutMs` (default 60 000 ms).                                                   |
+| `the simulated user failed: …`                          | The simulated user's model call failed.                                                                                |
 
 A judge whose provider failed three times is not an attempt's infrastructure error: the trial keeps
 its status, is marked ungraded with `gradingError: 'the judge failed: …'`, and is not retried. The
@@ -198,13 +200,15 @@ and it is not retried.
 
 ### Agent errors from the built-in adapters
 
-| Message                                          | Meaning                                                                                                                 |
-| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| `no script for task <id>`                        | The `scripted` adapter has no reply for the task, and `replayReference` is off or the task has no reference transcript. |
-| `the script of <id> has no reply for turn <n>`   | The task sends more user messages than the script has replies.                                                          |
-| `no answer after <n> model calls in one turn`    | The `openai-tools` agent kept calling tools; `maxRounds` (default 8) ran out.                                           |
-| `unknown tool <name>` (in a tool result)         | The model called a tool the task's mock tools don't declare. The agent sees it.                                         |
-| `no data for these arguments` (in a tool result) | No mock tool response's `when` matched the arguments. The agent sees it.                                                |
+| Message                                                         | Meaning                                                                                                                 |
+| --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `no script for task <id>`                                       | The `scripted` adapter has no reply for the task, and `replayReference` is off or the task has no reference transcript. |
+| `the script of <id> has no reply for turn <n>`                  | The task sends more user messages than the script has replies.                                                          |
+| `no answer after <n> model calls in one turn`                   | The `openai-tools` agent kept calling tools; `maxRounds` (default 8) ran out.                                           |
+| `the command exited with code <n> before its turn ended`        | The `command` agent's process ended without a `done` event; the message ends with the last lines of its stderr.         |
+| `the command wrote a line to stdout that is not a JSON event …` | The `command` agent printed something other than an event to stdout. Write logs to stderr.                              |
+| `unknown tool <name>` (in a tool result)                        | The model called a tool the task's mock tools don't declare. The agent sees it.                                         |
+| `no data for these arguments` (in a tool result)                | No mock tool response's `when` matched the arguments. The agent sees it.                                                |
 
 ## Results and reports
 

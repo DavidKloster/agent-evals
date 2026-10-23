@@ -112,9 +112,10 @@ judgement of two transcripts, `comparePair` asks a judge in both orders. See
 
 If your agent can be driven from Node, yes: write an adapter (a `start` function that returns
 `send`, `outcome` and `close`). The built-in `http-sse` adapter drives an agent behind HTTP that
-streams Server-Sent Events, so the agent can be written in any language. The `openai-tools` adapter
-is a small agent of its own, to compare models on the task's mock tools. See
-[Extending](extending.md#an-adapter).
+streams Server-Sent Events, and the `command` adapter runs an agent as a process that speaks JSON
+lines on stdin and stdout ([Evaluating a Python agent](python-agents.md)), so the agent can be
+written in any language. The `openai-tools` adapter is a small agent of its own, to compare models
+on the task's mock tools. See [Extending](extending.md#an-adapter).
 
 ### Do I need a server or a database?
 

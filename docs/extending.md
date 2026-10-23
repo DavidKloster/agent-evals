@@ -199,8 +199,11 @@ for (const trial of byTask('backend-down')) {
 ```
 
 The built-in adapters are good templates: `src/adapters/openai-tools.ts` (a chat-with-tools loop that
-records every model call, tool call and result) and `src/adapters/http-sse.ts` (an agent behind HTTP
-that streams Server-Sent Events, with `open`, `outcome` and `close` callbacks).
+records every model call, tool call and result), `src/adapters/http-sse.ts` (an agent behind HTTP
+that streams Server-Sent Events, with `open`, `outcome` and `close` callbacks) and
+`src/adapters/command.ts` (an agent as a process per trial, speaking JSON lines on stdin and stdout).
+For an agent in another language, the `command` adapter may save you the adapter: see
+[Evaluating a Python agent](python-agents.md).
 
 ## A custom grader
 
@@ -673,9 +676,10 @@ TypeScript config as `judge: { client, models: ['judge-model'] }`. The same clie
 
 ## A TypeScript config module
 
-A YAML or JSON config can only name the built-in adapters (`openai-tools`, `scripted`, `http-sse`)
-and an OpenAI-compatible judge. For your own adapters, graders, fact matchers, judge client or hooks,
-write the config as a TypeScript (or JavaScript) module whose **default export** is the config.
+A YAML or JSON config can only name the built-in adapters (`openai-tools`, `scripted`, `http-sse`,
+`command`) and an OpenAI-compatible judge. For your own adapters, graders, fact matchers, judge
+client or hooks, write the config as a TypeScript (or JavaScript) module whose **default export** is
+the config.
 `agent-evals run --config eval.config.ts` imports it. The fields are listed in
 [the CLI and config reference](cli-and-config.md).
 
