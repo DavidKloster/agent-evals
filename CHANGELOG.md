@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0](https://github.com/DavidKloster/agent-evals/compare/v0.1.0...v0.1.0) (2026-10-23)
+
+
+### Bug Fixes
+
+* **graders:** language recognises short German replies and calls a tie unknown ([#22](https://github.com/DavidKloster/agent-evals/issues/22)) ([bc77ffb](https://github.com/DavidKloster/agent-evals/commit/bc77ffb1ed0eba85c3ef0e131da033ca0263721c)), closes [#20](https://github.com/DavidKloster/agent-evals/issues/20)
+
 ## 0.1.0 (2026-10-22)
 
 
