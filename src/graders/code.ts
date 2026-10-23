@@ -528,9 +528,11 @@ function prose(text: string): string {
 }
 
 // Frequent function words only one of the two languages has ("in", "was", "so", "an", "also", "will" are in both).
+// German has "du" and the question words next to English "you" and "which what when where who how": short replies
+// such as "Welchen meinst du?" often have no other.
 const stopWords = {
   de: new Set(
-    'der die das den dem des ein eine einen einem einer eines und oder aber nicht ist sind war wurde werden wird ich sie wir ihr es er mit von zu zum zur auf für bei aus nach über unter wie dass auch noch nur schon sehr hier dort kann können muss müssen haben hat hatte bitte keine kein ihre ihren ihnen sich wenn dann'.split(
+    'der die das den dem des ein eine einen einem einer eines und oder aber nicht ist sind war wurde werden wird ich du sie wir ihr es er mit von zu zum zur auf für bei aus nach über unter wie welche welcher welches welchen welchem wann wo wer dass auch noch nur schon sehr hier dort kann können muss müssen haben hat hatte bitte keine kein ihre ihren ihnen sich wenn dann'.split(
       ' ',
     ),
   ),
@@ -543,7 +545,9 @@ const stopWords = {
 
 /**
  * `language`: the answer is in `de` or `en`, by a cheap count of each language's stop words; the expected language must
- * have more. The counts are the assertion's actual value. `on` as in `facts`.
+ * have more. A tie (an answer without any stop word too) is no evidence either way, so the verdict is unknown, which
+ * `onUnknown` turns into a failure (the default) or sets aside. The counts are the assertion's actual value. `on` as in
+ * `facts`.
  */
 export interface LanguageSpec extends GraderSpec {
   language: 'de' | 'en';
@@ -566,6 +570,7 @@ const language: Grader<LanguageSpec> = {
       if (stopWords.en.has(word)) counts.en++;
     }
     const other = spec.language === 'de' ? 'en' : 'de';
+    const tie = counts.de === counts.en;
     return {
       assertions: [
         {
@@ -573,8 +578,10 @@ const language: Grader<LanguageSpec> = {
           passed: counts[spec.language] > counts[other],
           expected: spec.language,
           actual: counts,
+          ...(tie ? { unknown: true as const } : {}),
         },
       ],
+      unknown: tie,
     };
   },
 };
