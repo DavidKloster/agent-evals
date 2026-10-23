@@ -55,7 +55,8 @@ A message of the conversation.
 #### `model_call`
 
 One call of a model, as the adapter reports it. The built-in `openai-tools` adapter records one per
-round of its tool loop; the `http-sse` adapter records one per `usage` event of the stream.
+round of its tool loop; the `http-sse` and `command` adapters record one per `usage` event of the
+stream.
 
 | Field          | Type                    | Required | Meaning                                                                                     |
 | -------------- | ----------------------- | -------- | ------------------------------------------------------------------------------------------- |
@@ -141,8 +142,9 @@ type). The time is filled in this way:
   records what happened during the turn (model calls, tool calls, tool results), and the harness
   records the assistant message after the adapter returned the reply.
 - **`at` is not guaranteed to increase along the array.** An adapter may set `at` itself: the
-  `http-sse` adapter uses the time each Server-Sent Event arrived, and a scripted turn may replay
-  events with their own times. Use `at` for durations, not for the order.
+  `http-sse` adapter uses the time each Server-Sent Event arrived, the `command` adapter the time
+  each line arrived, and a scripted turn may replay events with their own times. Use `at` for
+  durations, not for the order.
 - When an attempt fails, the harness appends an `error` event. An agent that ignores the trial's
   abort signal can still record events until the harness takes its copy of the transcript, so in rare
   cases an event follows the `error` event.

@@ -12,6 +12,7 @@
 | [Metrics](metrics.md)                                   | pass@1, pass@k, pass^k, partial credit, latency, cost, diffs, saturation, graduation and calibration, with the formulas                       |
 | [Judges and calibration](judges-and-calibration.md)     | Model graders, rubrics, the Unknown verdict, consensus, pairwise comparison, human labels and the simulated user                              |
 | [CLI and config](cli-and-config.md)                     | Every command and option, the config file, the output folder                                                                                  |
+| [Evaluating a Python agent](python-agents.md)           | An agent in Python or any other language, run as a process per trial: the protocol, a minimal script, the target                              |
 | [Viewer](viewer.md)                                     | The local viewer: runs, comparisons, transcripts, labelling                                                                                   |
 | [Claude Code plugin](claude-code.md)                    | The skills that set up evals and write tasks from failures: installing them as a plugin or by copying, and how they stay in step with the CLI |
 | [Troubleshooting](troubleshooting.md) and [FAQ](faq.md) | Errors you may meet and common questions                                                                                                      |

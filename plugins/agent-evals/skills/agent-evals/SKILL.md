@@ -16,7 +16,7 @@ Before the first npm release, link a checkout: in a clone of `DavidKloster/agent
 ## Setting up
 
 1. **Layout.** Copy the shape of the [invoice-desk example](https://github.com/DavidKloster/agent-evals/tree/main/examples/invoice-desk): `evals/eval.config.yaml`, `evals/tools.yaml` (mock tools and system prompt), `evals/regression/suite.yaml` and `evals/capability/suite.yaml`, each with a `tasks/` folder. Formats: [Task and suite files](https://github.com/DavidKloster/agent-evals/blob/main/docs/task-and-suite-files.md).
-2. **Target.** Pick how the run reaches the agent: `openai-tools` (a model with the mock tools), `http-sse` (your agent behind HTTP), `scripted` (replays, no model), or your own adapter in a `.ts` config ([Extending](https://github.com/DavidKloster/agent-evals/blob/main/docs/extending.md)).
+2. **Target.** Pick how the run reaches the agent: `openai-tools` (a model with the mock tools), `http-sse` (your agent behind HTTP), `command` (your agent as a process, in any language: [Evaluating a Python agent](https://github.com/DavidKloster/agent-evals/blob/main/docs/python-agents.md)), `scripted` (replays, no model), or your own adapter in a `.ts` config ([Extending](https://github.com/DavidKloster/agent-evals/blob/main/docs/extending.md)).
 3. **Tasks.** Start with 20 to 50 tasks from real failures, each balanced by its opposite (should write / should not write). To write one, use the `write-eval-task` skill.
 4. **Validate.** `npx @agent-evals/core validate evals/regression/suite.yaml evals/capability/suite.yaml` must print `OK` for every suite: each reference solution passes its graders.
 5. **Dry run in CI.** A second config replays the references, with no model and no key:

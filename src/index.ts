@@ -131,13 +131,9 @@ export {
   type MockTool,
   type ToolEnvironment,
 } from './adapters/mock-tools.ts';
-export {
-  defaultEventMapper,
-  httpSseAdapter,
-  type EventMapper,
-  type HttpSseOptions,
-  type TurnState,
-} from './adapters/http-sse.ts';
+export { httpSseAdapter, type HttpSseOptions } from './adapters/http-sse.ts';
+export { defaultEventMapper, type EventMapper, type TurnState } from './adapters/event-mapper.ts';
+export { commandAdapter, type CommandOptions } from './adapters/command.ts';
 export {
   OpenAICompatible,
   type Completion,
